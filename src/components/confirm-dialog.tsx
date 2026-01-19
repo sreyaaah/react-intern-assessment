@@ -2,9 +2,8 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "./dialog"
-import { Button } from "./button"
+  DialogTitle,} from "@/components/ui/dialog"
+import { Button } from "./ui/button"
 
 interface ConfirmDialogProps {
   open: boolean
