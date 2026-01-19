@@ -1,13 +1,13 @@
 import { Outlet } from "react-router-dom";
 import { Header } from "./components/header";
+import { Toaster } from "./components/ui/toaster";
 
 export default function Layout() {
-    return <div>
-        <div>
-            <Header />
-        </div>
-        <main>
+    return <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="container mx-auto">
             <Outlet />
         </main>
+        <Toaster />
     </div>
 }
