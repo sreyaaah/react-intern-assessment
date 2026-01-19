@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react"
-import { useRecipeStore, type RecipeType } from "@/store/recipes"
+import { useRecipeStore } from "@/store/recipes"
 import RecipieCard from "./recipe-card"
 import RecipeInfo from "./recipe-info"
 import { Dialog, DialogTrigger } from "../ui/dialog"
@@ -17,10 +17,13 @@ export default function RecipeList({ showArchived = false }: RecipeListProps) {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 9
 
-    const getActiveRecipes = useRecipeStore(state => state.getActiveRecipes)
-    const getArchivedRecipes = useRecipeStore(state => state.getArchivedRecipes)
-
-    const allRecipes: RecipeType[] = showArchived ? getArchivedRecipes() : getActiveRecipes()
+    const recipes = useRecipeStore(state => state.recipes)
+    
+    const allRecipes = useMemo(() => {
+        return showArchived 
+            ? recipes.filter(r => r.archived)
+            : recipes.filter(r => !r.archived)
+    }, [recipes, showArchived])
 
     const filteredRecipes = useMemo(() => {
         if (!searchQuery.trim()) return allRecipes

@@ -2,7 +2,8 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,} from "@/components/ui/dialog"
+  DialogTitle,
+} from "./ui/dialog"
 import { Button } from "./ui/button"
 
 interface ConfirmDialogProps {
