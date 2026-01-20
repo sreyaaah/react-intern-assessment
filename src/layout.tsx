@@ -3,11 +3,14 @@ import { Header } from "./components/header";
 import { Toaster } from "./components/ui/toaster";
 
 export default function Layout() {
-    return <div className="min-h-screen bg-gray-50">
-        <Header />
-        <main className="container mx-auto">
-            <Outlet />
-        </main>
-        <Toaster />
+  return (
+    <div className="min-h-screen bg-[url('/images/pic1.jpg')] bg-cover bg-center bg-no-repeat">
+      <Header />
+      <main className="container mx-auto">
+        <Outlet />
+      </main>
+      <Toaster />
     </div>
+  )
 }
+
