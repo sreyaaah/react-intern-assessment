@@ -1,15 +1,95 @@
 import { useState, useMemo } from "react"
-import { useRecipeStore } from "@/store/recipes"
+import { useRecipeStore, type RecipeType } from "@/store/recipes"
 import RecipieCard from "./recipe-card"
 import RecipeInfo from "./recipe-info"
 import { Dialog, DialogTrigger } from "../ui/dialog"
 import { SearchBar } from "../search-bar"
 import { Pagination } from "../pagination"
 import { EmptyState } from "../empty-state"
+import { ConfirmDialog } from "../confirm-dialog"
+import { toast } from "@/lib/toast-helper"
 import { CookingPot, Search as SearchIcon } from "lucide-react"
 
 interface RecipeListProps {
     showArchived?: boolean
+}
+
+function RecipeItem({ recipe }: { recipe: RecipeType }) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
+    
+    const deleteRecipe = useRecipeStore(state => state.deleteRecipe)
+    const archiveRecipe = useRecipeStore(state => state.archiveRecipe)
+    const unarchiveRecipe = useRecipeStore(state => state.unarchiveRecipe)
+
+    const handleDelete = () => {
+        deleteRecipe(recipe.id)
+        toast({
+            title: "Recipe deleted",
+            description: "The recipe has been permanently deleted",
+            variant: "success"
+        })
+    }
+
+    const handleArchiveToggle = () => {
+        if (recipe.archived) {
+            unarchiveRecipe(recipe.id)
+            toast({
+                title: "Recipe unarchived",
+                description: "The recipe has been restored",
+                variant: "success"
+            })
+        } else {
+            archiveRecipe(recipe.id)
+            toast({
+                title: "Recipe archived",
+                description: "The recipe has been moved to archives",
+                variant: "success"
+            })
+        }
+    }
+
+    return (
+        <>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <div>
+                        <RecipieCard
+                            title={recipe.title}
+                            description={recipe.description}
+                            archived={recipe.archived}
+                            onDeleteClick={() => setDeleteDialogOpen(true)}
+                            onArchiveClick={() => setArchiveDialogOpen(true)}
+                        />
+                    </div>
+                </DialogTrigger>
+                <RecipeInfo id={recipe.id} />
+            </Dialog>
+
+            <ConfirmDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                title="Delete Recipe"
+                description={`Are you sure you want to delete "${recipe.title}"? This action cannot be undone.`}
+                onConfirm={handleDelete}
+                confirmText="Delete"
+                variant="destructive"
+            />
+
+            <ConfirmDialog
+                open={archiveDialogOpen}
+                onOpenChange={setArchiveDialogOpen}
+                title={recipe.archived ? "Unarchive Recipe" : "Archive Recipe"}
+                description={
+                    recipe.archived
+                        ? `Are you sure you want to unarchive "${recipe.title}"?`
+                        : `Are you sure you want to archive "${recipe.title}"?`
+                }
+                onConfirm={handleArchiveToggle}
+                confirmText={recipe.archived ? "Unarchive" : "Archive"}
+            />
+        </>
+    )
 }
 
 export default function RecipeList({ showArchived = false }: RecipeListProps) {
@@ -83,19 +163,7 @@ export default function RecipeList({ showArchived = false }: RecipeListProps) {
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {paginatedRecipes.map(recipe => (
-                            <Dialog key={recipe.id}>
-                                <DialogTrigger asChild>
-                                    <div>
-                                        <RecipieCard
-                                            index={recipe.id}
-                                            title={recipe.title}
-                                            description={recipe.description}
-                                            archived={recipe.archived}
-                                        />
-                                    </div>
-                                </DialogTrigger>
-                                <RecipeInfo id={recipe.id} />
-                            </Dialog>
+                            <RecipeItem key={recipe.id} recipe={recipe} />
                         ))}
                     </div>
 

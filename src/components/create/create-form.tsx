@@ -69,9 +69,8 @@ export default function CreateForm() {
 
         form.reset()
         
-        setTimeout(() => {
-            navigate("/")
-        }, 500)
+        form.reset()
+        navigate("/")
     }
 
     return (
